@@ -1,28 +1,32 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import { connect } from "react-redux";
 import ChatBar from './components/chatbar';
 import { bindActionCreators } from "redux";
 import * as chatActions from "./redux/actions/chatActions";
 import PropTypes from "prop-types";
-import {register} from "./socket";
+import { register } from "./socket";
+import { createChannel } from "./socket/channelConnection";
 
 function App(props) {
 
   const [chatInfo, setChatInfo] = useState({
     myId: "",
     remoteId: "",
+    token: "",
     messages: []
   });
+
+
 
   function handleChange(event) {
     const _chatInfo = { ...chatInfo, [event.target.name]: event.target.value };
     setChatInfo(_chatInfo);
   };
-  
-  function addChatBoxHandler(event){
-  
-    props.actions.addNewChat(chatInfo);
-    
+
+  function addChatBoxHandler(event) {
+
+    props.chat_actions.addNewChat(chatInfo);
+
   }
 
   return (
@@ -33,29 +37,34 @@ function App(props) {
         <hr className="my-4"></hr>
         <p>Press start to initiate chat mode</p>
         <p>
-          My Alias &nbsp;&nbsp;: { }
+          My Alias &nbsp;&nbsp;&nbsp;: {}
           <input name="myId" type="text" onChange={handleChange}></input>
         </p>
         <p>
-          Chat With : { }
+          Chat With : {}
           <input name="remoteId" type="text" onChange={handleChange}></input>
         </p>
-        <button className="btn btn-primary btn-lg" onClick={()=>register(chatInfo.myId)}>Register</button>
-        <button className="btn btn-primary btn-lg" onClick={addChatBoxHandler}>Start</button>
+        <p>
+          Token &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : {}
+          <input name="token" type="text" size="100" onChange={handleChange}></input>
+        </p>
+        <button className="btn btn-success btn-lg" onClick={() => register(chatInfo.myId)}>Register</button> &nbsp;
+        <button className="btn btn-danger btn-lg" onClick={() => createChannel(chatInfo.token, {})}>Register With TCM</button> &nbsp;
+        <button className="btn btn-info btn-lg" onClick={addChatBoxHandler}>Start</button>
       </div>
-      <ChatBar/>
+      <ChatBar />
     </div>
-  );  
+  );
 }
 
-ChatBar.propTypes = {
+App.propTypes = {
   chats: PropTypes.array.isRequired,
-  actions: PropTypes.object.isRequired
+  chat_actions: PropTypes.object.isRequired
 };
 
 function mapDispatchToProps(dispatch) {
   return {
-    actions: bindActionCreators(chatActions, dispatch)
+    chat_actions: bindActionCreators(chatActions, dispatch)
   };
 }
 
